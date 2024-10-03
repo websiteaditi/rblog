@@ -1,0 +1,114 @@
+---
+title: "summary"
+author: "aditi"
+---
+
+## Introduction
+
+This is info on how to summarize data :) mpg first
+
+```{r}
+#| label : setup
+library(tidyverse)
+library(ggformula)
+library(mosaic)
+library(kableExtra)
+```
+
+```{r}
+mpg
+
+```
+
+```{r}
+glimpse (mpg) 
+
+```
+
+```{r}
+inspect (mpg)
+
+```
+
+```{r}
+mpg %>%skimr::skim()
+```
+
+```{r}
+mpg_modified <- mpg %>%
+  dplyr::mutate(
+    cyl = as_factor(cyl),
+    fl = as_factor(fl),
+    drv = as_factor(drv),
+    class = as_factor(class),
+    trans = as_factor(trans)
+  )
+glimpse(mpg_modified)
+```
+
+```{r}
+mpg_modified %>%
+  group_by(cyl) %>%
+  summarize(average_hwy = mean(hwy), count = n())
+```
+
+```{r}
+mpg%>%
+group_by(manufacturer)%>% 
+summarize(mean_milage = mean(cty))
+```
+
+## Analyzing math anxiety data
+
+😀
+
+```{r}
+math_anxiety <- read_csv("../../data/MathAnxiety.csv")
+math_anxiety
+```
+
+```{r}
+math_anxiety <- read_delim(file="../../data/MathAnxiety.csv", delim=";")
+```
+
+```{r}
+glimpse (math_anxiety)
+```
+
+```{r}
+inspect (math_anxiety)
+```
+
+```{r}
+math_anxiety %>%skimr::skim()
+```
+
+```{r}
+math_anxiety_modified <- math_anxiety %>% 
+  dplyr::mutate(
+    Age = Age/120,
+    Grade= as_factor(Grade)
+    Gender= as_factor(Gender)
+    
+    )
+math_anxiety_modified
+glimpse(math_anxiety_modified)
+```
+
+```{r}
+math_anxiety_modified%>%
+group_by(Gender)%>% 
+summarize(avg_anxiety = mean(AMAS))
+```
+
+```{r}
+math_anxiety_modified%>%
+group_by(Gender)%>% 
+summarize(avg_anxiety = mean(RCMAS))
+```
+
+```{r}
+math_anxiety_modified%>%
+group_by(Grade,Gender)%>% 
+summarize(avg_anxiety = mean(RCMAS), count=n())
+```

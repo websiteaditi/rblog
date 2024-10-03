@@ -1,0 +1,59 @@
+---
+title: "my name is aditi"
+author: "aditi"
+---
+
+# introduction
+
+this is an amazing blog made in arvind's class. I love to code.
+
+## header
+
+```{r}
+#| label : setup
+library(tidyverse)
+library(ggformula)
+library(babynames)
+
+```
+
+```{r}
+babynames
+```
+
+```{r}
+babynames %>% filter(name=="Aditi")
+```
+
+```{r}
+babynames %>% filter (name=="Aditi") %>%
+ gf_line(n~year)
+```
+
+I am famous!!!!
+
+```{r}
+babynames %>% filter(name=="Aditi" | name=="Adithi")
+```
+
+-   ok
+
+🦠🦐🥖🤪
+
+```{r}
+glimpse (babynames)
+```
+
+```{r}
+inspect (babynames)
+```
+
+```{r}
+babynames_modified <- babynames %>%
+  dplyr::mutate(
+    
+    n = as_factor(n),
+    prop = as_factor(prop)
+  )
+glimpse(babynames_modified)
+```
