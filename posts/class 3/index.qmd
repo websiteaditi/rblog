@@ -1,0 +1,98 @@
+---
+title: "class 3: counts and stuff"
+---
+
+```{r}
+#| label: setup
+library(knitr)
+library(tidyverse)
+library(babynames)
+library(ggformula)
+library(skimr)
+library(kableExtra)
+library(mosaic)
+```
+
+```{r}
+taxi <- read.csv("https://vincentarelbundock.github.io/Rdatasets/csv/modeldata/taxi.csv")
+```
+
+```{r}
+taxi
+
+```
+
+```{r}
+glimpse(taxi)
+```
+
+```{r}
+inspect(taxi)
+```
+
+```{r}
+skim(taxi)
+```
+
+```{r}
+## Convert `dow`, `local`, and `month` into ordered factors
+taxi_modified <- taxi %>%
+  mutate(
+    dow = factor(dow,
+      levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+      labels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+      ordered = TRUE
+    ),
+    ##
+    local = factor(local,
+      levels = c("no", "yes"),
+      labels = c("no", "yes"),
+      ordered = TRUE
+    ),
+    ##
+    month = factor(month,
+      levels = c("Jan", "Feb", "Mar", "Apr"),
+      labels = c("Jan", "Feb", "Mar", "Apr"),
+      ordered = TRUE
+    )
+  )
+taxi_modified %>% glimpse()
+```
+
+```{r}
+gf_bar(~tip, fill= ~local, data = taxi_modified, position="fill") %>%
+   gf_labs(title = "Plot 1A: Counts of Tips")
+```
+
+```{r}
+taxi_modified %>%
+  gf_bar(~company, fill = ~tip, position = "fill") %>%
+  gf_labs(title = "Plot 2A: Dodged Bar Chart") %>%
+  gf_theme(theme(axis.text.x = element_text(size = 6, angle = 45, hjust = 1)))
+```
+
+```{r}
+gf_bar(~dow, fill = ~tip,position="fill", data = taxi_modified) %>%
+  gf_labs(title = "Plot C: Counts of Tips by Day of Week")
+```
+
+```{r}
+gf_bar(~month, fill = ~tip, position="fill", data = taxi_modified) %>%
+  gf_labs(title = "Plot D: Counts of Tips by Month")
+```
+
+```{r}
+gf_bar(~ month | dow, fill = ~tip,  position="fill", data = taxi_modified) %>%
+  gf_labs(title = "Plot E: Counts of Tips by Day of Week and Month")
+```
+
+```{r}
+gf_bar(~ hour, fill = ~tip,position="fill", data = taxi_modified) %>%
+  gf_labs(
+    title = "Plot F: Counts of Tips by Hour",
+  )
+```
+
+```{r}
+
+```
