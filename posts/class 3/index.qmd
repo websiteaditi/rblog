@@ -1,5 +1,6 @@
 ---
 title: "class 3: counts and stuff"
+author: "aditi"
 ---
 
 ```{r}
