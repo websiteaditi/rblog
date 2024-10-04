@@ -254,6 +254,8 @@ race_start_factor %>%
   gf_labs(title = "Race Times by Start-Time")
 ```
 
+## **Distributions and Densities in the Wild**
+
 ```{r}
 pop <- read_csv("../../data/populations.csv")
 pop
