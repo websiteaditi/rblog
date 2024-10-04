@@ -1,0 +1,255 @@
+---
+title: "quantities"
+author: "aditi"
+---
+
+## Quantities
+
+### dataset of diamonds
+
+```{r}
+library(tidyverse)
+library(mosaic)
+library(ggformula)
+library(skimr)
+library(crosstable) 
+```
+
+```{r}
+diamonds
+```
+
+```{r}
+glimpse(diamonds)
+```
+
+```{r}
+skim(diamonds)
+```
+
+```{r}
+inspect(diamonds)
+```
+
+## plotting histograms
+
+### they show the distribution of quantitative data within defined ranges
+
+```{r}
+gf_histogram(~price, data = diamonds) %>%
+  gf_labs(
+    title = "Plot 1A: Diamond Prices",
+    caption = "using ggformula"
+  )
+```
+
+```{r}
+gf_histogram(~price,
+  data = diamonds,
+  bins =100 #continuous range of values are divided into bins 
+) %>%
+  gf_labs(
+    title = "Plot 1B: Diamond Prices",
+    caption = "ggformula"
+  )
+```
+
+```{r}
+#distribution of carat weight
+diamonds %>%
+  gf_histogram(~carat) %>%
+  gf_labs(
+    title = "Plot 2A: Carats of Diamonds",
+    caption = "ggformula"
+  )
+```
+
+```{r}
+#stacked histogram
+gf_histogram(~price, fill = ~cut, data = diamonds) %>%
+  gf_labs(title = "Plot 3A: Diamond Prices", caption = "ggformula")
+```
+
+```{r}
+diamonds %>%
+  #alpha controls the transparancy of the color
+  gf_histogram(~price, fill = ~cut, alpha = 2) %>%
+  gf_labs(
+    title = "Plot 3B: Prices by Cut",
+    caption = "ggformula"
+  )
+```
+
+```{r}
+diamonds %>%
+  #color pink gives the outline to the bars
+  gf_histogram(~price, fill = ~cut, color = "pink", alpha = 0.8) %>%
+  gf_facet_wrap(~cut) %>%
+  gf_labs(
+    title = "Plot 3C: Prices by Filled and Facetted by Cut",
+    caption = "ggformula"
+  ) %>%
+  gf_theme(theme(
+    axis.text.x = element_text(
+      angle = 65, #angle of the x axis elements
+      hjust = 1 #horizontal justification
+    )
+  ))
+```
+
+```{r}
+diamonds %>%
+  gf_histogram(~price, fill = ~cut, color = "black", alpha = 0.3) %>%
+  gf_facet_wrap(~cut, scales = "free_y", nrow = 2) %>% 
+  #divides plot into facets. Each one represents a histogram for the cut quality.
+  gf_labs(
+    title = "Plot 3D: Prices Filled and Facetted by Cut",
+    subtitle = "Free y-scale",
+    caption = "ggformula"
+  ) %>%
+  gf_theme(theme(
+    axis.text.x =
+      element_text(
+        angle = 45,
+        hjust = 1
+      )
+  ))
+```
+
+```{r}
+race_df <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/race.csv")
+rank_df <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-26/ultra_rankings.csv")
+```
+
+```{r}
+glimpse(race_df)
+```
+
+```{r}
+glimpse(rank_df)
+```
+
+```{r}
+race_df %>%
+  favstats(~distance, data = .)
+```
+
+```{r}
+##
+race_df %>%
+  favstats(~participants, data = .)
+```
+
+```{r}
+##
+rank_df %>%
+  drop_na() %>%
+  favstats(time_in_seconds ~ gender, data = .)
+```
+
+```{r}
+## library(crosstable)
+crosstable(time_in_seconds + age ~ gender, data = rank_df) %>%
+  crosstable::as_flextable()
+```
+
+```{r}
+race_df %>%
+  count(country) %>%
+  arrange(desc(n))
+```
+
+```{r}
+rank_df %>%
+  count(nationality) %>%
+  arrange(desc(n))
+```
+
+```{r}
+rank_df %>%
+  filter(rank %in% c(1, 2, 3)) %>%
+  count(nationality) %>%
+  arrange(desc(n))
+```
+
+```{r}
+longest_races <- race_df %>%
+  slice_max(n = 5, order_by = distance) # Longest distance races
+longest_races
+longest_races %>%
+  left_join(., rank_df, by = "race_year_id") %>% # total participants in longest 4 races
+  filter(rank %in% c(1:10)) %>% # Top 10 ranks
+  count(nationality) %>%
+  arrange(desc(n))
+```
+
+```{r}
+rank_df %>%
+  gf_histogram(~time_in_seconds, bins = 75) %>%
+  gf_labs(title = "Histogram of Race Times")
+```
+
+```{r}
+race_df %>%
+  gf_histogram(~distance, bins = 50) %>%
+  gf_labs(title = "Histogram of Race Distances")
+```
+
+```{r}
+race_df %>%
+  filter(distance == 0)
+```
+
+```{r}
+race_times <- race_df %>%
+  count(start_time) %>%
+  arrange(desc(n))
+race_times
+```
+
+```{r}
+race_start_factor <- race_df %>%
+  filter(distance == 0) %>% # Races that actually took place
+  mutate(
+    start_day_time =
+      case_when(
+        start_time > hms("02:00:00") &
+          start_time <= hms("06:00:00") ~ "early_morning",
+        start_time > hms("06:00:01") &
+          start_time <= hms("10:00:00") ~ "late_morning",
+        start_time > hms("10:00:01") &
+          start_time <= hms("14:00:00") ~ "mid_day",
+        start_time > hms("14:00:01") &
+          start_time <= hms("18:00:00") ~ "afternoon",
+        start_time > hms("18:00:01") &
+          start_time <= hms("22:00:00") ~ "evening",
+        start_time > hms("22:00:01") &
+          start_time <= hms("23:59:59") ~ "night",
+        start_time >= hms("00:00:00") &
+          start_time <= hms("02:00:00") ~ "postmidnight",
+        .default = "other"
+      )
+  ) %>%
+  mutate(
+    start_day_time =
+      as_factor(start_day_time) %>%
+        fct_collapse(
+          .f = .,
+          night = c("night", "postmidnight")
+        )
+  )
+##
+# Join with rank_df
+race_start_factor %>%
+  left_join(rank_df, by = "race_year_id") %>%
+  drop_na(time_in_seconds) %>%
+  gf_histogram(
+    ~time_in_seconds,
+    bins = 75,
+    fill = ~start_day_time,
+    color = ~start_day_time,
+    alpha = 0.5
+  ) %>%
+  gf_facet_wrap(vars(start_day_time), ncol = 2, scales = "free_y") %>%
+  gf_labs(title = "Race Times by Start-Time")
+```
