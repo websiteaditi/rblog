@@ -253,3 +253,22 @@ race_start_factor %>%
   gf_facet_wrap(vars(start_day_time), ncol = 2, scales = "free_y") %>%
   gf_labs(title = "Race Times by Start-Time")
 ```
+
+```{r}
+pop <- read_csv("../../data/populations.csv")
+pop
+inspect(pop)
+```
+
+```{r}
+gf_histogram(~value, data = pop, title = "Long Tailed Histogram")
+##
+gf_density(~value, data = pop, title = "Long Tailed Density")
+```
+
+```{r}
+
+gf_histogram(~ log10(value), data = pop, title = "Histogram with Log transformed x-variable")
+##
+gf_density(~ log10(value), data = pop, title = "Density with Log transformed x-variable")
+```
